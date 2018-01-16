@@ -16,7 +16,7 @@ func (t TestEdge) To() string   { return t.to }
 func (t TestEdge) From() string { return t.from }
 
 func TestCreateTree(t *testing.T) {
-	tree = NewBFSTree(
+	tree = New(
 		TestEdge{"a", "b"},
 		TestEdge{"b", "d"},
 		TestEdge{"d", "e"},

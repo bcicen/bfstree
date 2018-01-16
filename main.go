@@ -24,7 +24,7 @@ type BFSTree struct {
 	edges []Edge
 }
 
-func NewBFSTree(edges ...Edge) *BFSTree { return &BFSTree{edges} }
+func New(edges ...Edge) *BFSTree { return &BFSTree{edges} }
 
 func (b *BFSTree) Len() int       { return len(b.edges) }
 func (b *BFSTree) Edges() []Edge  { return b.edges }
