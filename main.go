@@ -115,7 +115,9 @@ func NewPath(edges ...Edge) *Path {
 	return np
 }
 
-func (p *Path) Last() Edge { return p.edges[len(p.edges)-1] }
+func (p *Path) String() string { return strings.Join(p.Nodes(), "->") }
+func (p *Path) Edges() []Edge  { return p.edges }
+func (p *Path) Last() Edge     { return p.edges[len(p.edges)-1] }
 
 // Returns names for all path nodes in the order they are transversed
 func (p *Path) Nodes() []string {
@@ -125,8 +127,6 @@ func (p *Path) Nodes() []string {
 	}
 	return names
 }
-
-func (p *Path) String() string { return strings.Join(p.Nodes(), "->") }
 
 // Return whether a given edge, if added, would result in
 // a circular or recursive path
