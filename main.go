@@ -6,11 +6,11 @@ import (
 )
 
 var (
-	DEBUG = false
+	Debug = true // enable debug message printing
 )
 
 func dbg(format string, a ...interface{}) {
-	if DEBUG {
+	if Debug {
 		fmt.Printf(format, a...)
 	}
 }
@@ -56,7 +56,7 @@ func (b *BFSTree) FindPath(start string, end string) (path *Path, err error) {
 
 	// Create start paths from origin node
 	for _, e := range b.fromNode(start) {
-		p := NewPath(e)
+		p := newPath(e)
 		if e.To() == end {
 			return p, nil
 		}
@@ -74,7 +74,7 @@ func (b *BFSTree) FindPath(start string, end string) (path *Path, err error) {
 
 			// maximum path depth reached, drop
 			if len(children) == 0 {
-				dbg("    dropped path (no children): %s", p)
+				dbg("    dropped path (no children): %s\n", p)
 				continue
 			}
 
@@ -86,7 +86,7 @@ func (b *BFSTree) FindPath(start string, end string) (path *Path, err error) {
 					continue
 				}
 
-				np := NewPath(p.edges...)
+				np := newPath(p.edges...)
 				np.AddEdge(e)
 				dbg("    new path branch: %s\n", np)
 
@@ -107,7 +107,7 @@ type Path struct {
 	*BFSTree
 }
 
-func NewPath(edges ...Edge) *Path {
+func newPath(edges ...Edge) *Path {
 	np := &Path{&BFSTree{}}
 	for _, e := range edges {
 		np.AddEdge(e)
@@ -116,7 +116,6 @@ func NewPath(edges ...Edge) *Path {
 }
 
 func (p *Path) String() string { return strings.Join(p.Nodes(), "->") }
-func (p *Path) Edges() []Edge  { return p.edges }
 func (p *Path) Last() Edge     { return p.edges[len(p.edges)-1] }
 
 // Returns names for all path nodes in the order they are transversed

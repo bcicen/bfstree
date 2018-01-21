@@ -1,22 +1,24 @@
-package bfstree
+package bfstree_test
 
 import (
 	"testing"
+
+	"github.com/bcicen/bfstree"
 )
 
-var tree *BFSTree
+var tree *bfstree.BFSTree
 
-// TestEdge is an Edge interface implementation
 type TestEdge struct {
 	from string
 	to   string
 }
 
+// TestEdge implements bfstree.Edge interface
 func (t TestEdge) To() string   { return t.to }
 func (t TestEdge) From() string { return t.from }
 
 func TestCreateTree(t *testing.T) {
-	tree = New(
+	tree = bfstree.New(
 		TestEdge{"a", "b"},
 		TestEdge{"b", "d"},
 		TestEdge{"d", "e"},
