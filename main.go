@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	Debug = true // enable debug message printing
+	Debug = false // enable debug message printing
 )
 
 func dbg(format string, a ...interface{}) {
