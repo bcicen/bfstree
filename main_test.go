@@ -1,7 +1,9 @@
 package bfstree_test
 
 import (
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/bcicen/bfstree"
 )
@@ -54,4 +56,36 @@ func TestFindNoPath(t *testing.T) {
 		t.Errorf("no error returned on missing path")
 	}
 	t.Logf("got expected error: %s", err)
+}
+
+// TestFindNoPathInDenseGraph guards against combinatorial path blowup: a densely
+// connected graph has super-linearly many simple paths between nodes. Without a
+// global visited set, FindPath enumerates all of them for an unreachable target
+// and never returns. The search must terminate with an error.
+func TestFindNoPathInDenseGraph(t *testing.T) {
+	const n = 300
+	var edges []bfstree.Edge
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if i != j {
+				edges = append(edges, TestEdge{strconv.Itoa(i), strconv.Itoa(j)})
+			}
+		}
+	}
+	dense := bfstree.New(edges...)
+
+	done := make(chan error, 1)
+	go func() {
+		_, err := dense.FindPath("0", "unreachable")
+		done <- err
+	}()
+
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Errorf("expected error for unreachable target")
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("FindPath did not terminate: combinatorial path blowup on a dense graph")
+	}
 }
