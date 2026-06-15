@@ -54,13 +54,19 @@ func (b *BFSTree) FindPath(start string, end string) (path *Path, err error) {
 	var iter int
 	var paths []*Path
 
+	// track visited nodes; without this FindPath walks every simple path
+	visited := map[string]bool{start: true}
+
 	// Create start paths from origin node
 	for _, e := range b.fromNode(start) {
 		p := newPath(e)
 		if e.To() == end {
 			return p, nil
 		}
-		paths = append(paths, p)
+		if !visited[e.To()] {
+			visited[e.To()] = true
+			paths = append(paths, p)
+		}
 	}
 
 	for len(paths) > 0 {
@@ -80,9 +86,9 @@ func (b *BFSTree) FindPath(start string, end string) (path *Path, err error) {
 
 			// branch path for each child node
 			for _, e := range children {
-				// drop circular paths
-				if p.IsCircular(e) {
-					dbg("    dropped circular child: %s->%s\n", e.From(), e.To())
+				// drop already-visited nodes
+				if visited[e.To()] {
+					dbg("    dropped visited child: %s->%s\n", e.From(), e.To())
 					continue
 				}
 
@@ -93,6 +99,7 @@ func (b *BFSTree) FindPath(start string, end string) (path *Path, err error) {
 				if e.To() == end {
 					return np, nil
 				}
+				visited[e.To()] = true
 				newPaths = append(newPaths, np)
 			}
 		}
@@ -129,6 +136,8 @@ func (p *Path) Nodes() []string {
 
 // Return whether a given edge, if added, would result in
 // a circular or recursive path
+//
+// Deprecated: FindPath now uses a global visited set; kept for compatibility.
 func (p *Path) IsCircular(edge Edge) bool {
 	child := edge.To()
 	for _, e := range p.edges {
